@@ -1,0 +1,187 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!-- PharmacyMapper.xml -->
+<mapper namespace="com.project.apa.mapper.PharmacyMapper">
+
+	<!-- 약국 정보를 조회하는 쿼리 -->
+	<select id="getPharmacyInfo" parameterType="String"
+		resultType="com.project.apa.api.pharmacy.domain.PharmacyInfoDTO">
+		select
+		pharmacyName, pharmacyId, pharmacySSN, pharmacyTel,pharmacyEmail, pharmacyAddress
+		from tblPharmacy
+		where pharmacyId = #{id}
+	</select>
+	
+	 <!-- 약국 운영정보 조회 쿼리 -->
+	 <select id="getPharmacyOpeningInfo" parameterType="String"
+		resultType="com.project.apa.api.pharmacy.domain.PharmacyInfoDTO">
+	select
+		to_char(openTime, 'HH24:MI') as openTime, to_char(closeTime, 'HH24:MI') as closeTime,
+		isPharmarcyNightCare, isPharmarcyHoliday, isDispense, pharmacyDayOff
+	from tblPharmacyOperation
+		where pharmacyId= #{id}
+			
+	</select>
+	 
+
+    <!-- 약 전체 목록를 조회하는 쿼리 -->
+<!--     <select id="getDispenseList" parameterType="String" resultType="com.project.apa.api.pharmacy.domain.DispenseDTO">
+		select 
+    		dispenseListSeq, hospitalName, userName, userTel,appointmentDate, regdate, pickUpWay, pickUpDate, dispenseStatus
+        from vwdslist
+				where pharmacyId = #{id}
+						order by appointmentDate desc
+    </select> -->
+    <select id="getDispenseList" parameterType="java.util.HashMap" resultType="com.project.apa.api.pharmacy.domain.DispenseSearchDTO">
+		select * 
+		  from(
+			select 
+	    		row_number() over(order by appointmentdate desc) as rn, seq, hospitalname, username, usertel,appointmentdate, regdate, pickupway, pickupdate, dispensestatus
+	        from vwdslist
+					where pharmacyid = #{id}
+			) 
+		where rn between #{begin} and #{end}
+    </select>
+    
+      <!-- 약 전체 목록을 최신순으로 조회하는 쿼리 -->
+<!--  <select id="getDispensesLatest" parameterType="String" resultType="com.project.apa.api.pharmacy.domain.DispenseDTO">
+		select 
+    		dispenseListSeq, hospitalName, userName, userTel,appointmentDate, regdate, pickUpWay, pickUpDate, dispenseStatus
+        from vwdslist
+				where pharmacyId = #{id}
+					order by appointmentDate desc
+    </select>  -->
+    
+    
+
+    <!-- 약 제조대기 목록를 조회하는 쿼리 -->
+    <select id="getDispenseWaiting" parameterType="java.util.HashMap" resultType="com.project.apa.api.pharmacy.domain.DispenseDTO">
+		select *
+		from(
+			select
+		 		row_number() over(order by appointmentdate desc) as rn, dispenseListSeq, hospitalName, userName, userTel,appointmentdate,regdate, pickUpWay, dispenseStatus 
+			from vwdstat      
+       	 		where dispenseStatus = '제조대기' and pharmacyId=#{id}
+				)
+       	 	where rn between #{begin} and #{end}
+    </select>
+    
+    <!--제조대기 목록 승인/거부하는 쿼리 -->
+	<!-- 승인 -->
+	<update id="approveDispense" parameterType="Map">
+	    UPDATE tblDispenseStatus 
+	    SET dispenseStatus = '제조중' 
+	    WHERE dispenseListSeq IN
+	    <foreach item="item" index="index" collection="list" open="(" separator="," close=")">
+	        #{item}
+	    </foreach>
+	</update>
+	
+	<!-- 거절 -->
+	<update id="rejectDispense" parameterType="Map">
+	    UPDATE tblDispenseStatus 
+	    SET dispenseStatus = '거절' 
+	    WHERE dispenseListSeq IN
+	    <foreach item="item" index="index" collection="list" open="(" separator="," close=")">
+	        #{item}
+	    </foreach>
+	</update>
+    
+
+    <!-- 약 제조중 목록를 조회하는 쿼리 -->
+    <select id="getDispensing" parameterType="String" resultType="com.project.apa.api.pharmacy.domain.DispenseDTO">
+		select *
+		from(
+			select
+		 		row_number() over(order by appointmentdate desc) as rn, dispenseListSeq, hospitalName, userName, userTel,appointmentdate,regdate, pickUpWay, dispenseStatus 
+			from vwdstat      
+       	 		where dispenseStatus = '제조중' and pharmacyId=#{id}
+				)
+       	 	where rn between #{begin} and #{end}
+    </select>
+    
+    <!-- 제조중 목록을 제조완료처리하는 쿼리 -->
+	<update id="finishDispense" parameterType="Map">
+	    UPDATE tblDispenseStatus 
+	    SET dispenseStatus = '제조완료' 
+	    WHERE dispenseListSeq IN
+	    <foreach item="item" index="index" collection="list" open="(" separator="," close=")">
+	        #{item}
+	    </foreach>
+	</update>
+
+
+
+    <!-- 약 제조완료 목록를 조회하는 쿼리 -->
+    <select id="getDispenseComplete" parameterType="String" resultType="com.project.apa.api.pharmacy.domain.DispenseDTO">
+		select *
+		from(
+			select
+		 		row_number() over(order by appointmentdate desc) as rn, dispenseListSeq, hospitalName, userName, userTel,appointmentdate,regdate, pickUpWay, dispenseStatus 
+			from vwdstat      
+       	 		where dispenseStatus = '제조완료' and pharmacyId=#{id}
+				)
+       	 	where rn between #{begin} and #{end}
+    </select>
+    
+    <!-- 제조완료 목록을 수령완료처리하는 쿼리 -->
+	<update id="pickUpFinishDispense" parameterType="Map">
+	    UPDATE tblDispenseStatus 
+	    SET dispenseStatus = '수령완료', regdate = SYSDATE
+	    WHERE dispenseListSeq IN
+	    <foreach item="item" index="index" collection="list" open="(" separator="," close=")">
+	        #{item}
+	    </foreach>
+	</update>
+    
+
+    <!-- 약 수령완료 목록를 조회하는 쿼리 -->
+    <select id="getDispensePickUp" parameterType="String" resultType="com.project.apa.api.pharmacy.domain.DispenseDTO">
+		 	select * 
+			  from(
+				 select 
+			  	row_number() over(order by appointmentdate desc) as rn, dispenseListSeq, hospitalName, userName,userTel, appointmentDate,  pickUpWay,pickUpDate, dispenseStatus
+		  	 from vwdisPu 
+	            where dispenseStatus = '수령완료' and pharmacyId=#{id}
+	            	)
+	       	 	where rn between #{begin} and #{end}
+    </select>
+    
+    <!--제조 건수를 조회하는 쿼리  -->
+    <select id="getCountByStatus" parameterType="String" resultType="com.project.apa.api.pharmacy.domain.DispenseCntDTO" >
+  		SELECT 
+		    SUM(DECODE(dispenseStatus, '제조대기', 1, NULL))|| ' ' AS waitingCnt,
+		    SUM(DECODE(dispenseStatus, '제조중', 1, NULL))|| ' ' AS dispensingCnt,
+		    SUM(DECODE(dispenseStatus, '제조완료', 1, NULL))|| ' ' AS dispenseFinCnt,
+		    SUM(DECODE(dispenseStatus, '수령완료', 1, NULL)) || ' 'AS pickUpFinCnt,
+		    COUNT(1) AS totalCnt
+		FROM 
+		    vwdslist
+		WHERE 1=1
+          and   pharmacyId = #{id}
+		GROUP BY  1
+
+    </select>
+
+
+    
+   
+    
+    
+    
+    
+   
+
+    <!-- 약 처방 정보를 추가하는 쿼리 -->
+ <!--    <insert id="insertDispense" parameterType="com.project.apa.api.pharmacy.domain.DispenseDTO">
+        INSERT INTO dispense_table (patient_id, medication_name, dosage) VALUES (#{patientId}, #{medicationName}, #{dosage});
+    </insert> -->
+
+
+
+    <!-- 약국 정보를 추가하는 쿼리 -->
+<!--     <insert id="insertPharmacyInfo" parameterType="com.project.apa.api.pharmacy.domain.PharmacyInfoDTO">
+        INSERT INTO pharmacy_info_table (name, location, phone) VALUES (#{name}, #{location}, #{phone});
+    </insert> -->
+
+</mapper>

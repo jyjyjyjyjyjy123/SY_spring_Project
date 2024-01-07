@@ -1,0 +1,81 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!DOCTYPE tiles-definitions PUBLIC "-//Apache Software Foundation//DTD Tiles Configuration 3.0//EN" "http://tiles.apache.org/dtds/tiles-config_3_0.dtd">
+
+<tiles-definitions>
+	<definition name="main" template="/WEB-INF/views/layout/main.jsp">
+		<put-attribute name="asset" value="/WEB-INF/inc/asset.jsp"></put-attribute>
+		<put-attribute name="header" value="/WEB-INF/inc/header.jsp"></put-attribute>
+		<put-attribute name="footer" value="/WEB-INF/inc/footer.jsp"></put-attribute>
+		<put-attribute name="content" value="/WEB-INF/views/main.jsp"></put-attribute>
+	</definition>
+	<definition name="selftest.*" template="/WEB-INF/views/layout/selftest.jsp">
+		<put-attribute name="asset" value="/WEB-INF/inc/asset.jsp"/>
+		<put-attribute name="header" value="/WEB-INF/inc/header.jsp"/>
+		<put-attribute name="footer" value="/WEB-INF/inc/footer.jsp"/>
+		<put-attribute name="content" value="/WEB-INF/views/selftest/{1}.jsp"/>
+	</definition>
+	<definition name="auth.*" template="/WEB-INF/views/layout/auth.jsp">
+		<put-attribute name="asset" value="/WEB-INF/inc/asset.jsp"></put-attribute>
+		<put-attribute name="header" value="/WEB-INF/inc/header.jsp"></put-attribute>
+		<put-attribute name="footer" value="/WEB-INF/inc/footer.jsp"></put-attribute>
+		<put-attribute name="content" value="/WEB-INF/views/auth/{1}.jsp"></put-attribute>
+	</definition>
+	<definition name="search.reservation.*" template="/WEB-INF/views/layout/search.jsp">
+		<put-attribute name="asset" value="/WEB-INF/inc/asset.jsp"></put-attribute>
+		<put-attribute name="header" value="/WEB-INF/inc/header.jsp"></put-attribute>
+		<put-attribute name="footer" value="/WEB-INF/inc/footer.jsp"></put-attribute>
+		<put-attribute name="content" value="/WEB-INF/views/search/reservation/{1}.jsp"></put-attribute>
+	</definition>
+	<definition name="search.*" template="/WEB-INF/views/layout/search.jsp">
+		<put-attribute name="asset" value="/WEB-INF/inc/asset.jsp"></put-attribute>
+		<put-attribute name="header" value="/WEB-INF/inc/header.jsp"></put-attribute>
+		<put-attribute name="footer" value="/WEB-INF/inc/footer.jsp"></put-attribute>
+		<put-attribute name="content" value="/WEB-INF/views/search/{1}.jsp"></put-attribute>
+	</definition>
+	<definition name="hospital.*.*.*" template="/WEB-INF/views/layout/mypage.jsp">
+		<put-attribute name="mypageAsset" value="/WEB-INF/inc/mypageAsset.jsp"/>
+		<put-attribute name="sidebar" value="/WEB-INF/inc/hospital/{1}/sidebar.jsp"/>
+		<put-attribute name="header" value="/WEB-INF/inc/mypageheader.jsp"/>
+		<put-attribute name="footer" value="/WEB-INF/inc/mypagefooter.jsp"/>
+		<put-attribute name="content" value="/WEB-INF/views/hospital/{1}/{2}/{3}.jsp"/>
+	</definition>
+	<definition name="advice.*" template="/WEB-INF/views/layout/main.jsp">
+		<put-attribute name="asset" value="/WEB-INF/inc/asset.jsp"></put-attribute>
+		<put-attribute name="header" value="/WEB-INF/inc/header.jsp"></put-attribute>
+		<put-attribute name="footer" value="/WEB-INF/inc/footer.jsp"></put-attribute>
+		<put-attribute name="content" value="/WEB-INF/views/advice/{1}.jsp"></put-attribute>
+	</definition>
+	<definition name="community.*" template="/WEB-INF/views/layout/main.jsp">
+		<put-attribute name="asset" value="/WEB-INF/inc/asset.jsp"/>
+		<put-attribute name="header" value="/WEB-INF/inc/header.jsp"/>
+		<put-attribute name="footer" value="/WEB-INF/inc/footer.jsp"/>
+		<put-attribute name="content" value="/WEB-INF/views/community/{1}.jsp"/>
+	</definition>
+	<definition name="hospital.*.*" template="/WEB-INF/views/layout/mypage.jsp">
+		<put-attribute name="mypageAsset" value="/WEB-INF/inc/mypageAsset.jsp"></put-attribute>
+		<put-attribute name="sidebar" value="/WEB-INF/inc/hospital/{1}/sidebar.jsp"></put-attribute>
+		<put-attribute name="header" value="/WEB-INF/inc/mypageheader.jsp"></put-attribute>
+		<put-attribute name="footer" value="/WEB-INF/inc/mypagefooter.jsp"></put-attribute>
+		<put-attribute name="content" value="/WEB-INF/views/hospital/{1}/{2}.jsp"></put-attribute>
+	</definition>
+	<definition name="*.newtab.*" template="/WEB-INF/views/layout/newtab.jsp">
+		<put-attribute name="content" value="/WEB-INF/views/{1}/newtab/{2}.jsp"/>
+	</definition>
+	<definition name="*.*" template="/WEB-INF/views/layout/mypage.jsp">
+		<put-attribute name="mypageAsset" value="/WEB-INF/inc/mypageAsset.jsp"></put-attribute>
+		<put-attribute name="sidebar" value="/WEB-INF/inc/{1}/sidebar.jsp"></put-attribute>
+		<put-attribute name="header" value="/WEB-INF/inc/mypageheader.jsp"></put-attribute>
+		<put-attribute name="footer" value="/WEB-INF/inc/mypagefooter.jsp"></put-attribute>
+		<put-attribute name="content" value="/WEB-INF/views/{1}/{2}.jsp"></put-attribute>
+	</definition>
+	<definition name="admin.*.*" template="/WEB-INF/views/layout/mypage.jsp">
+		<put-attribute name="mypageAsset" value="/WEB-INF/inc/mypageAsset.jsp"/>
+		<put-attribute name="sidebar" value="/WEB-INF/inc/admin/{1}/sidebar.jsp"/>
+		<put-attribute name="header" value="/WEB-INF/inc/mypageheader.jsp"/>
+		<put-attribute name="footer" value="/WEB-INF/inc/mypagefooter.jsp"/>
+		<put-attribute name="content" value="/WEB-INF/views/admin/{1}.jsp"/>
+	</definition>
+
+
+</tiles-definitions>

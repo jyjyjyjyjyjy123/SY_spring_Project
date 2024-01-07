@@ -1,0 +1,103 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.project.apa.mapper.AdviceMapper">
+	
+	<resultMap id="adviceResultMap" type="com.project.apa.api.advice.domain.AdviceDTO">
+        <result property="userid" column="userid"/>
+        <result property="counseltitle" column="counselingTitle"/>
+        <result property="counselcontent" column="counselingContent"/>
+        <result property="iscounselanswer" column="isCounselAnswer"/>
+        <result property="regdate" column="regdate"/>
+        <result property="departmentname" column="departmentName"/>
+        <result property="doctorname" column="doctorName"/>
+        <result property="hospitalname" column="hospitalName"/>
+        <result property="counselanswercontent" column="counselAnswerContent"/>
+        <result property="answerdate" column="answerDate"/>
+        <result property="helpedcount" column="helpedCount"/>
+        <!-- 각 컬럼과 DTO 필드를 매핑합니다. -->
+    </resultMap>
+    
+	<select id="getAdviceList" parameterType="java.util.HashMap" resultType="com.project.apa.api.advice.domain.AdviceDTO">
+		SELECT *
+			FROM (
+			    SELECT e.*,
+			           rownum AS rnum
+			    FROM (
+			        SELECT mq.counseltitle,
+			               mq.counselcontent,
+			               mq.iscounselanswer,
+			               mq.regdate,
+			               ma.counselanswercontent,
+			               ma.medicounselanswerseq AS seq,
+			               ma.answertime,
+			               ma.helpedcount,
+			               u.userid,
+			               u.userSeq,
+			               d.departmentname,
+			               dc.doctorname,
+			               h.hospitalname
+			        FROM tblmedicounselingquestion mq
+			            INNER JOIN tblmedicounselinganswer ma ON mq.medicounselquestionseq = ma.medicounselquestionseq
+			            LEFT OUTER JOIN tblUser u ON u.userseq = mq.userseq
+			            LEFT OUTER JOIN tbldepartment d ON d.departmentseq = mq.departmentseq
+			            LEFT OUTER JOIN tbldoctor dc ON dc.doctorseq = ma.doctorseq
+			            LEFT OUTER JOIN tblhospital h ON h.hospitalid = dc.hospitalid
+			        ORDER BY mq.regdate DESC
+			    ) e
+			) 
+		WHERE rnum BETWEEN #{begin} AND #{end}
+
+	</select>
+	
+	
+	
+	<select id="getTotalCount" resultType="Integer">
+    SELECT COUNT(*) FROM tblmedicounselingquestion mq
+        INNER JOIN tblmedicounselinganswer ma ON mq.medicounselquestionseq = ma.medicounselquestionseq
+        LEFT OUTER JOIN tblUser u ON u.userseq = mq.userseq
+        LEFT OUTER JOIN tbldepartment d ON d.departmentseq = mq.departmentseq
+        LEFT OUTER JOIN tbldoctor dc ON dc.doctorseq = ma.doctorseq
+        LEFT OUTER JOIN tblhospital h ON h.hospitalid = dc.hospitalid
+	</select>
+	
+	
+	<insert id="add" parameterType="com.project.apa.api.advice.domain.AdviceDTO">
+		insert into tblmedicounselingquestion (mediCounselQuestionSeq, userSeq, departmentSeq, counselTitle, counselContent, isCounselAnswer, regdate) values (seqMediCounselingQuestion.nextVal, #{userseq}, #{departmentSeq},#{counseltitle},#{counselcontent},default,sysdate)
+	</insert>
+	
+	<select id="getDepartmentList" resultType="com.project.apa.api.advice.domain.AdviceDTO">
+		select * from tblDepartment
+	</select>
+	
+	<insert id="storage" parameterType="com.project.apa.api.advice.domain.StorageDTO">
+		insert into tblMediCounselingBox (mediCounselBoxSeq, userSeq, mediCounselAnswerSeq) values (seqMediCounselingBox.nextVal, #{userSeq}, #{medicounselanswerseq})
+	</insert>
+	
+	<select id="findlist" parameterType="com.project.apa.api.advice.domain.AdviceDTO" resultType="com.project.apa.api.advice.domain.AdviceDTO">
+	<!--  select * from ( -->
+        select
+                mq.counseltitle,
+                mq.counselcontent,
+                mq.iscounselanswer,
+                mq.regdate,
+                ma.counselanswercontent,
+                ma.medicounselanswerseq,
+                ma.answertime,
+                ma.helpedcount,
+                u.userid,
+                u.userSeq,
+                d.departmentname,
+                dc.doctorname,
+                h.hospitalname
+            from tblmedicounselingquestion mq
+                inner join tblmedicounselinganswer ma on mq.medicounselquestionseq = ma.medicounselquestionseq
+                left outer join tblUser u on u.userseq = mq.userseq
+                left outer join tbldepartment d on d.departmentseq = mq.departmentseq
+                left outer join tbldoctor dc on dc.doctorseq = ma.doctorseq
+                left outer join tblhospital h on h.hospitalid = dc.hospitalid
+            where d.departmentseq = #{departmentSeq}
+            order by mq.regdate desc 
+	</select>
+	
+	
+</mapper>

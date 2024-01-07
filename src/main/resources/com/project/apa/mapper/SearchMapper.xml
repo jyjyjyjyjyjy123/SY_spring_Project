@@ -1,0 +1,114 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.project.apa.mapper.SearchMapper">
+	 
+	 <resultMap type="com.project.apa.api.search.model.HospitalInfoDTO" id="infoMap">
+		<id property="hospitalid" column="hospitalid"/>
+		<result property="hospitalpw" column="hospitalpw"/>
+		<result property="hospitalname" column="hospitalname"/>
+		<result property="hospitalssn" column="hospitalssn"/>
+		<result property="hospitaladdress" column="hospitaladdress"/>
+		<result property="hospitalemail" column="hospitalemail"/>
+		<result property="hospitaltel" column="hospitaltel"/>
+		<result property="hospitaljoindate" column="hospitaljoindate"/>
+		<result property="face" column="face"/>
+		<result property="unface" column="unface"/>
+		<result property="housecall" column="housecall"/>
+		<result property="vaccination" column="vaccination"/>
+		<result property="ishealthcheck" column="ishealthcheck"/>
+		<result property="ishospitalnightcare" column="ishospitalnightcare"/>
+		<result property="ishospitalholiday" column="ishospitalholiday"/>
+		<result property="opentime" column="opentime"/>
+		<result property="closetime" column="closetime"/>
+		<result property="restopentime" column="restopentime"/>
+		<result property="restclosetime" column="restclosetime"/>
+		<result property="hospitaldayoff" column="hospitaldayoff"/>
+		<collection property="deptlist" resultMap="deptMap"></collection>
+	</resultMap>
+	
+	<resultMap type="com.project.apa.api.search.model.SelfsymtomDTO" id="deptMap">
+		<result property="departmentseq" column="departmentseq"/>
+		<result property="departmentname" column="departmentname"/>
+	</resultMap>
+	 
+	 <select id="findsystomlist" parameterType="com.project.apa.api.search.model.FindHospitalDTO" resultType="String">
+	 	select * from(
+			select d.departmentseq from tblsymtomdisease sd
+			    left outer join tblselfsymtom ss
+			        on sd.selfsymtomseq = ss.selfsymtomseq
+			    inner join tbltreatmentdisease td
+			        on sd.diseaseseq = td.diseaseseq
+			    inner join tbldepartment d
+		       	 on td.departmentseq = d.departmentseq
+			    where ss.selfsymtomseq in (#{seq1},#{seq2},#{seq3},#{seq4},#{seq5},#{seq6},#{seq7},#{seq8})
+			    group by d.departmentseq, td.diseasename having count(*) = (select max(count(td.diseasename)) from tblsymtomdisease sd
+			    left outer join tblselfsymtom ss
+			        on sd.selfsymtomseq = ss.selfsymtomseq
+			    inner join tbltreatmentdisease td
+			        on sd.diseaseseq = td.diseaseseq
+			    where ss.selfsymtomseq in (#{seq1},#{seq2},#{seq3},#{seq4},#{seq5},#{seq6},#{seq7},#{seq8})
+			    group by td.diseasename))
+			    group by departmentseq
+	 </select>
+	 
+	 <select id="findHospitalList" resultMap="infoMap">
+	    select 
+		    h.hospitalid, h.hospitalpw, h.hospitalname, h.hospitalssn, h.hospitaladdress,
+		    h.hospitalemail, h.hospitaltel, h.hospitaljoindate,
+		    ho.face, ho.unface, ho.housecall, ho.vaccination, ho.ishealthcheck, ho.ishospitalnightcare,
+		    ho.ishospitalholiday, ho.opentime, ho.closetime, ho.restopentime, ho.restclosetime, ho.hospitaldayoff , d.departmentseq, d.departmentname
+		from tblhospital h
+		    inner join tblhospitaloperation ho
+		        on h.hospitalid = ho.hospitalid
+		    inner join tblhospitaltreatment ht
+		        on h.hospitalid = ht.hospitalid
+            left outer join tbldepartment d
+                on ht.departmentseq = d.departmentseq
+		    where ht.departmentseq in
+			<foreach collection="list" item="findsystomlist" open="(" separator="," close=")">
+		    	#{findsystomlist}
+		    </foreach>
+		    GROUP by h.hospitalid, h.hospitalpw, h.hospitalname, h.hospitalssn, h.hospitaladdress,
+		    h.hospitalemail, h.hospitaltel, h.hospitaljoindate,
+		    ho.face, ho.unface, ho.housecall, ho.vaccination, ho.ishealthcheck, ho.ishospitalnightcare,
+		    ho.ishospitalholiday, ho.opentime, ho.closetime, ho.restopentime, ho.restclosetime, ho.hospitaldayoff, d.departmentseq, d.departmentname
+		    order by h.hospitalid desc
+	 </select>
+	 <select id="findHospitalList2" resultMap="infoMap">
+	    select a.*, ht.departmentseq, d.departmentname from      
+    (select 
+		    h.hospitalid, h.hospitalpw, h.hospitalname, h.hospitalssn, h.hospitaladdress,
+		    h.hospitalemail, h.hospitaltel, h.hospitaljoindate,
+		    ho.face, ho.unface, ho.housecall, ho.vaccination, ho.ishealthcheck, ho.ishospitalnightcare,
+		    ho.ishospitalholiday, ho.opentime, ho.closetime, ho.restopentime, ho.restclosetime, ho.hospitaldayoff
+		from tblhospital h
+		    inner join tblhospitaloperation ho
+		        on h.hospitalid = ho.hospitalid
+		    left outer join tblhospitaltreatment ht
+		        on h.hospitalid = ht.hospitalid
+		    where ht.departmentseq in #{deptseq}
+		    order by h.hospitalid desc) a 
+        inner join tblhospitaltreatment ht
+            on ht.hospitalid = a.hospitalid
+        inner join tbldepartment d
+            on d.departmentseq = ht.departmentseq
+	 </select>
+	 <select id="finddept" parameterType="com.project.apa.api.search.model.HospitalInfoDTO" resultType="com.project.apa.api.search.model.SelfsymtomDTO">
+	 	select d.departmentseq ,d.departmentname
+		    from tblhospitaltreatment ht
+		        inner join tbldepartment d
+		            on ht.departmentseq = d.departmentseq
+		    where ht.hospitalid = #{hospitalid}
+	 </select>
+	 <select id="pharmacyinfo" resultType="com.project.apa.api.search.model.PharmacyDTO">
+	 	select p.pharmacyid, p.pharmacyname, p.pharmacyaddress, p.pharmacyemail, p.pharmacytel, po.ispharmarcynightcare, po.ispharmarcyholiday,
+        to_char(po.opentime,'HH24:mi') as opentime, to_char(po.closetime,'HH24:mi') as closetime, po.pharmacydayoff
+    from tblpharmacy  p
+    inner join tblpharmacyoperation po
+        on p.pharmacyid = po.pharmacyid
+		where p.pharmacyid = #{pharmacyid}
+	 </select>
+	
+	
+	
+</mapper>

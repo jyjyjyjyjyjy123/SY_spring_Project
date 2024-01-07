@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.project.apa.mapper.BlackMapper">
+	
+	<select id="blacklist" resultType="com.project.apa.api.admin.domain.BlackDTO">
+		select b.*, u.userid, u.username from tblBlacklist b inner join tblUser u on u.userseq = b.userseq order by blacklistdate desc
+	</select>
+
+	<insert id="blacklistadd" parameterType="com.project.apa.api.admin.domain.BlackDTO">
+		INSERT INTO tblBlacklist (blacklistSeq, userSeq, blacklistDate, blacklistReason) 
+			VALUES ((select max(blacklistSeq) from tblBlacklist)+1, (select userSeq from tblUser where userId = #{userId}), default, #{blacklistReason})
+	</insert>
+	
+	<delete id="blacklistdel">
+		delete from tblBlacklist where blacklistSeq = #{blacklistSeq}
+	</delete>
+
+</mapper>

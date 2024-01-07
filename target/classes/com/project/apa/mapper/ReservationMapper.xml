@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.project.apa.mapper.ReservationMapper">
+	 <select id="finddeptdoc" parameterType="com.project.apa.api.search.model.HospitalDoctorDTO" resultType="com.project.apa.api.search.model.HospitalDoctorDTO">
+	 	select d.doctorseq,  d.hospitalid, d.doctorname, d.doctorimage, dept.departmentname, d.departmentSeq, d.workStatus
+			from tbldoctor d
+			    inner join tbldepartment dept
+			        on d.departmentseq = dept.departmentseq
+			where d.hospitalid  = #{hospitalId} and d.workstatus in ('y', 'Y') and dept.departmentname = #{departmentname}
+	 </select>
+	 <select id="userlist" resultType="com.project.apa.api.search.model.UserInfoDTO">
+	 	select * from tbluser where userseq = #{userseq}
+	 </select>
+	 <select id="childlist" resultType="com.project.apa.api.search.model.ChildInfoDTO">
+	 	select * from tblchild where userseq = #{userseq} and ischildunregister in('n','N')
+	 </select>
+	 <select id="childinfo" resultType="com.project.apa.api.search.model.ChildInfoDTO">
+	 	select * from tblchild where childseq = #{childseq}
+	 </select>
+	 
+	 <select id="pharmacylist" resultType="com.project.apa.api.search.model.PharmacyDTO">								
+	 	select p.pharmacyid, p.pharmacyname, p.pharmacyaddress, p.pharmacyemail, p.pharmacytel, po.ispharmarcynightcare, po.ispharmarcyholiday,
+        to_char(po.opentime,'HH24:mi') as opentime, to_char(po.closetime,'HH24:mi') as closetime, po.pharmacydayoff
+    from tblpharmacy  p
+    inner join tblpharmacyoperation po
+        on p.pharmacyid = po.pharmacyid
+where p.ispharmacyunregister in ('n', 'N') and po.isdispense in ('y', 'Y')
+	 </select>
+	 
+	 <select id="pharmacychoice" resultType="com.project.apa.api.search.model.PharmacyDTO">
+	 	select p.pharmacyid, p.pharmacyname, p.pharmacyaddress, p.pharmacyemail, p.pharmacytel,
+        to_char(po.opentime,'HH24:mi') as opentime, to_char(po.closetime,'HH24:mi') as closetime, po.pharmacydayoff
+		    from tblpharmacy  p
+		    inner join tblpharmacyoperation po
+		        on p.pharmacyid = po.pharmacyid
+		where p.pharmacyid = #{parmacyseq}
+	 </select>
+	
+</mapper>

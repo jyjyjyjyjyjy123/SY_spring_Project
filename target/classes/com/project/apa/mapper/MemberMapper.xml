@@ -1,0 +1,184 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.project.apa.mapper.MemberMapper">
+
+	<insert id="addUser" parameterType="com.project.apa.auth.model.MemberDTO">
+		insert into tblUser (userseq, username, userssn, userid, userpw, usertel, useraddress, useremail)
+			values (sequser.nextVal, #{username}, #{userssn}, #{userid}, #{userpw}, #{usertel}, #{useraddress}, #{useremail})
+	</insert>
+	
+	
+	<insert id="addAuth" parameterType="com.project.apa.auth.model.AuthDTO">
+		insert into tblUserAuth (userseq, userauth)
+			values (#{userseq}, #{userauth})
+	</insert>
+	<!-- 
+	<resultMap type="com.project.apa.auth.model.MemberDTO" id="memberMap">
+		<id property="userid" column="userid" />
+		<result property="userpw" column="userpw" />
+		<result property="username" column="username" />
+		<result property="enabled" column="enabled" />
+		<result property="regdate" column="regdate" />
+		<collection property="authlist" resultMap="authMap"></collection>
+	</resultMap>
+	
+	<resultMap type="com.project.apa.auth.model.AuthDTO" id="authMap">
+		<result property="userid" column="userid" />
+		<result property="auth" column="auth" />
+	</resultMap>
+	
+	<select id="read" resultMap="memberMap">
+		select
+		    m.userid,
+		    m.userpw,
+		    m.username,
+		    m.enabled,
+		    m.regdate,
+		    a.auth
+		from tblMember m
+		    left outer join tblAuth a
+		        on m.userid = a.userid
+		            where m.userid = #{userid}
+	</select> -->
+	
+	<resultMap type="com.project.apa.auth.model.MemberDTO" id="memberMap">
+		<id property="userid" column="userid" />
+		<result property="userseq" column="userseq" />
+		<result property="username" column="username" />
+		<result property="userssn" column="userssn" />
+		<result property="userid" column="userid" />
+		<result property="userpw" column="userpw" />
+		<result property="usertel" column="usertel" />
+		<result property="useraddress" column="useraddress" />
+		<result property="useremail" column="useremail" />
+		<result property="userrelation" column="userrelation" />
+		<result property="usercautioncount" column="usercautioncount" />
+		<result property="registerdate" column="registerdate" />
+		<result property="isuserunregister" column="isuserunregister" />
+		<collection property="authlist" resultMap="authMap"></collection>
+	</resultMap>
+	
+	<resultMap type="com.project.apa.auth.model.AuthDTO" id="authMap">
+		<result property="userseq" column="userseq" />
+		<result property="userauth" column="userauth" />
+	</resultMap>
+	
+	<select id="getUser" resultMap="memberMap">
+		select
+		   userseq,
+		   username,
+		   userssn,
+		   userid,
+		   userpw,
+		   usertel,
+		   useraddress,
+		   useremail,
+		   userrelation,
+		   usercautioncount,
+		   registerdate,
+		   isuserunregister
+		from tbluser where userid = #{userid}
+	</select>
+	
+<!-- 병원 -->
+ 	<resultMap type="com.project.apa.auth.model.HospitalMemberDTO" id="hospitalMap">
+		<id property="hospitalId" column="hospitalId" />
+		<result property="hospitalPw" column="hospitalPw" />
+		<result property="hospitalName" column="hospitalName" />
+		<result property="hospitalSsn" column="hospitalSsn" />
+		<result property="hospitalAddress" column="hospitalAddress" />
+		<result property="hospitalEmail" column="hospitalEmail" />
+		<result property="hospitalTel" column="hospitalTel" />
+		<result property="hospitalJoinDate" column="hospitalJoinDate" />
+		<result property="isHospitalUnRegister" column="isHospitalUnRegister" />
+		<collection property="authlist" resultMap="authMap"></collection>
+	</resultMap>
+	
+	<resultMap type="com.project.apa.auth.model.AuthDTO" id="authMap2">
+		<result property="hospitalId" column="hospitalId" />
+		<result property="hospitalauth" column="hospitalauth" />
+	</resultMap>
+	
+	<select id="getHospital" resultMap="hospitalMap">
+		select
+		   hospitalId,
+		   hospitalPw,
+		   hospitalName,
+		   hospitalSsn,
+		   hospitalAddress,
+		   hospitalEmail,
+		   hospitalTel,
+		   hospitalJoinDate,
+		   isHospitalUnRegister
+	from tblhospital where hospitalId = #{hospitalId}
+	</select>
+	
+
+
+
+	<insert id="addHospital" parameterType="com.project.apa.auth.model.HospitalMemberDTO">
+		insert into tblhospital (hospitalId, hospitalPw, hospitalName, hospitalSsn, hospitalAddress, hospitalEmail, hospitalTel)
+			values (#{hospitalId}, #{hospitalPw}, #{hospitalName}, #{hospitalSsn}, #{hospitalAddress}, #{hospitalEmail}, #{hospitalTel})
+	</insert>
+	
+	
+	<insert id="addHospitalAuth" parameterType="com.project.apa.auth.model.AuthDTO">
+		insert into tblHospitalAuth (hospitalid, hospitalauth)
+			values (#{hospitalid}, #{hospitalauth})
+	</insert>
+	
+	
+	
+	<!-- 약국 -->
+ 	<resultMap type="com.project.apa.auth.model.PharmacyMemberDTO" id="pharmacyMap">
+		<id property="pharmacyId" column="pharmacyId" />
+		<result property="pharmacyPw" column="pharmacyPw" />
+		<result property="pharmacyName" column="pharmacyName" />
+		<result property="pharmacySsn" column="pharmacySsn" />
+		<result property="pharmacyAddress" column="pharmacyAddress" />
+		<result property="pharmacyEmail" column="pharmacyEmail" />
+		<result property="pharmacyTel" column="pharmacyTel" />
+		<result property="regDate" column="regDate" />
+		<result property="isPharmacyUnRegister" column="isPharmacyUnRegister" />
+		<collection property="authlist" resultMap="authMap"></collection>
+	</resultMap>
+	
+	<resultMap type="com.project.apa.auth.model.AuthDTO" id="authMap3">
+		<result property="pharmacyId" column="pharmacyId" />
+		<result property="pharmacyauth" column="pharmacyauth" />
+	</resultMap>
+	
+	<select id="getPharmacy" resultMap="pharmacyMap">
+		select
+		   pharmacyId,
+		   pharmacyPw,
+		   pharmacyName,
+		   pharmacySsn,
+		   pharmacyAddress,
+		   pharmacyEmail,
+		   pharmacyTel,
+		   regDate,
+		   isPharmacyUnRegister
+	from tblpharmacy where pharmacyId = #{pharmacyId}
+	</select>
+	
+	<insert id="addPharmacy" parameterType="com.project.apa.auth.model.PharmacyMemberDTO">
+		insert into tblpharmacy (pharmacyId, pharmacyPw, pharmacyName, pharmacySsn, pharmacyAddress, pharmacyEmail, pharmacyTel)
+			values (#{pharmacyId}, #{pharmacyPw}, #{pharmacyName}, #{pharmacySsn}, #{pharmacyAddress}, #{pharmacyEmail}, #{pharmacyTel})
+	</insert>
+	
+	
+	<insert id="addPharmacyAuth" parameterType="com.project.apa.auth.model.AuthDTO">
+		insert into tblPharmacyAuth (pharmacyid, pharmacyauth)
+			values (#{pharmacyid}, #{pharmacyauth})
+	</insert>
+	
+</mapper>
+
+
+
+
+
+

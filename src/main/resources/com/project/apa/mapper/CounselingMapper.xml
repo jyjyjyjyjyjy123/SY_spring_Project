@@ -1,0 +1,78 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.project.apa.mapper.CounselingMapper">
+
+<select id="counselingwaitinglist" parameterType="com.project.apa.counseling.model.DoctorDto" resultType="com.project.apa.counseling.model.CounselingDTO">
+	select
+		mcq.counseltitle,
+		u.username,
+		mcq.regdate,
+		mcq.iscounselanswer,
+		mcq.mediCounselQuestionSeq 
+	from tblMediCounselingquestion mcq
+		inner join tbluser u
+			on mcq.userseq = u.userseq
+				inner join tbldepartment d
+					on mcq.departmentseq =d.departmentseq
+						inner join tbldoctor doc
+							on mcq.departmentseq = doc.departmentseq
+								inner join tblhospital h
+									on doc.hospitalid = h.hospitalid
+										where 
+										<!-- mcq.iscounselanswer = 'N' and -->
+										d.departmentSeq =#{departmentSeq}
+												and h.hospitalId = #{hospitalId}
+													and doc.doctorSeq = #{doctorSeq}
+	
+</select>
+
+<select id="get" resultType="com.project.apa.counseling.model.CounselingDTO">
+		select    
+    mcq.counseltitle,    
+    u.username,    
+    mcq.regdate,    
+    mcq.counselcontent,
+    mcq.mediCounselQuestionSeq  
+from tblMediCounselingquestion mcq    
+    inner join tbluser u    
+        on mcq.userseq = u.userseq     
+            inner join tbldepartment d      
+                on mcq.departmentseq =d.departmentseq   
+					where mcq.mediCounselQuestionSeq = #{mediCounselQuestionSeq}
+	</select>
+	
+	
+	<insert id="answeradd" parameterType="com.project.apa.counseling.model.CounselingDTO">
+		insert into tblmedicounselinganswer(mediCounselAnswerSeq, mediCounselQuestionSeq, doctorSeq, counselAnswerContent, answerTime, helpedCount) 
+			values(seqMediCounselingAnswer.nextVal,#{mediCounselQuestionSeq},#{doctorSeq},#{counselAnswerContent},default,'0')
+	</insert>
+	
+	<update id="answerupdate" parameterType="com.project.apa.counseling.model.CounselingDTO">
+		
+	update tblMediCounselingquestion set iscounselanswer = 'Y' where mediCounselQuestionSeq = #{mediCounselQuestionSeq}
+	
+	
+	</update>
+	
+	
+	
+<select id="getcomplete" resultType="com.project.apa.counseling.model.CounselingDTO">
+	select 
+		mcq.counseltitle,    
+    	u.username,    
+   		mcq.regdate,    
+    	mcq.counselcontent,
+    	mcq.mediCounselQuestionSeq,
+    	mca.answerTime,
+    	mca.counselAnswerContent
+		from tblMediCounselingquestion mcq
+   			 inner join tbluser u
+        		on mcq.userseq = u.userseq
+    				inner join tbldepartment d
+        				on mcq.departmentseq = d.departmentseq
+    						inner join tblmedicounselinganswer mca
+        						on mca.medicounselquestionseq = mcq.medicounselquestionseq
+        							where mcq.mediCounselQuestionSeq = #{mediCounselQuestionSeq}
+        							</select>
+
+</mapper>

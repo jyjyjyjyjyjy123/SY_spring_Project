@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.project.apa.mapper.ReportMapper">
+
+	<select id="postreportlist" resultType="com.project.apa.api.admin.domain.ReportDTO">
+		SELECT * FROM vwPostReportinfo <!-- order by postReportDate desc -->
+	</select>
+	
+	<select id="commentreportlist" resultType="com.project.apa.api.admin.domain.ReportDTO">
+		SELECT * FROM vwCommentReportinfo <!-- order by postReportDate desc -->
+	</select>
+
+	<select id="postreportview"  parameterType="String" resultType="com.project.apa.api.admin.domain.ReportDTO">
+		SELECT * FROM vwPostReportinfo where communityWriter = #{communityWriter}
+	</select>
+	
+	<update id="postreportdecline" parameterType="com.project.apa.api.admin.domain.ReportDTO">
+		update tblPostReport set isPostReportStatus = '거절' where postReportSeq = #{postReportSeq}
+	</update>
+
+	
+	
+	<update id="postreportapprove" parameterType="com.project.apa.api.admin.domain.ReportDTO">
+		update tblPostReport set isPostReportStatus = '승인' where postReportSeq = #{postReportSeq}
+	</update>
+	
+	<update id="postprivate" parameterType="com.project.apa.api.admin.domain.ReportDTO">
+		update tblCommunity set isReportApproval = 'y' WHERE communitySeq = #{communitySeq}
+	</update>
+	
+	<update id="cautionAdd" parameterType="com.project.apa.api.admin.domain.ReportDTO">
+		update tblUser set userCautionCount = userCautionCount + 1 WHERE userSeq = #{userSeq}
+	</update>
+	
+	<!-- <insert id="blackautoadd" parameterType="com.project.apa.api.admin.domain.BlackDTO">
+		INSERT INTO tblBlacklist (blacklistSeq, userSeq, blacklistDate, blacklistReason) 
+			VALUES ((select max(blacklistSeq) from tblBlacklist)+1, (select userSeq from tblUser where userId = #{userId}), default, #{blacklistReason})
+	</insert> -->
+	
+	
+	<select id="commentreportview"  parameterType="String" resultType="com.project.apa.api.admin.domain.ReportDTO">
+		SELECT * FROM vwCommentReportinfo where commentWriter = #{commentWriter}
+	</select>
+	
+	
+	
+	<update id="commentreportapprove" parameterType="com.project.apa.api.admin.domain.ReportDTO">
+		update tblCommentReport set isCommentReportStatus = '승인' where commentReportSeq = #{commentReportSeq}
+	</update>
+
+	<update id="commentreportdecline" parameterType="com.project.apa.api.admin.domain.ReportDTO">
+		update tblCommentReport set isCommentReportStatus = '거절' where commentReportSeq = #{commentReportSeq}
+	</update>
+
+</mapper>

@@ -1,0 +1,81 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.project.apa.mapper.CommunityMapper">
+
+	<select id="getCommunityList" parameterType="java.util.HashMap" resultType="com.project.apa.api.community.domain.CommunityDTO">
+		select * from
+		(select
+			c.*,
+			rownum as rnum
+		from
+		(select 
+    		c.communityseq,
+    		c.communitytitle,
+    		c.communitydate,
+    		u.userId,
+    		u.userseq
+		from tblCommunity c
+    		inner join tblUser u
+        		on c.userSeq = u.userSeq
+        			where c.isreportapproval = 'N'
+            order by c.communityDate desc) c ) where rnum BETWEEN #{begin} AND #{end}
+	</select>
+	
+	<select id="getTotalCount" resultType="Integer">
+	    select 
+    		count(*)
+		from tblCommunity c
+    		inner join tblUser u
+        		on c.userSeq = u.userSeq
+        			where c.isreportapproval = 'N'
+	</select>
+	
+	<select id="getCommunityInfo" resultType="com.project.apa.api.community.domain.CommunityDTO">
+		SELECT
+		    c.communityseq,
+		    c.communitytitle,
+		    c.communitydate,
+		    c.communitycontent,
+		    c.communitylikecount,   
+		    u.userid,
+		    u.userseq
+		from tblcommunity c
+		    inner join tbluser u
+		        on c.userseq = u.userseq
+		        where c.communityseq = #{communityseq}
+	</select>
+	
+	<select id="getCommentList" resultType= "com.project.apa.api.community.domain.CommunityCommentDTO">
+		select
+		    cl.*
+		from
+		(SELECT
+		    cc.communitycommentcontent,
+		    cc.communitycommentdate,
+		    cc.communitycommentseq,
+		    c.communityseq,
+		    u.userid
+		FROM tblcommunitycomment cc
+		    inner join tblcommunity c
+		        on cc.communityseq = c.communityseq
+		            inner join tbluser u
+		                on cc.userseq = u.userseq
+		                where cc.isreportapproval = 'N') cl where cl.communityseq = #{communityseq}
+	</select>
+	
+	
+	
+	<insert id="add" parameterType="com.project.apa.api.community.domain.CommunityDTO">
+		insert into tblcommunity(communityseq, userseq, communitydate, communitytitle, communitycontent,communitylikecount,communitycommentcount,isreportapproval) values (seqcommunity.nextval, #{userseq}, sysdate, #{communitytitle}, #{communitycontent}, default,default,default)	
+	</insert>
+	
+
+	
+	<insert id="commentadd" parameterType="com.project.apa.api.community.domain.CommunityCommentDTO">
+		insert into tblcommunitycomment (communitycommentseq, communityseq, userseq, communitycommentcontent, communitycommentdate, isreportapproval) values (seqcommunitycomment.nextVal, #{communityseq},#{userseq},#{communitycommentcontent},sysdate,default)
+	</insert>
+	
+	<delete id="commentdel" parameterType="com.project.apa.api.community.domain.CommunityCommentDTO">
+		delete from tblcommunitycomment where communitycommentseq = #{communitycommentseq}
+	</delete>
+</mapper>

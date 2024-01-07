@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.project.apa.mapper.ReservationAppointmentMapper">
+
+	<insert id="addHospitalAppintment" parameterType="com.project.apa.api.search.model.ReservationHospitalAppointmentDTO">
+		insert into tblAppointment (appointmentSeq, hospitalId, userSeq, childSeq, treatmentWay, doctorSeq, appointmentDate, regdate, symptom)
+		 values (seqAppointment.nextVal, #{hospitalid}, #{userseq}, 
+		 <if test="childseq != null and childseq != ''">
+        	#{childseq}
+	    </if>
+	    <if test="childseq == null or childseq == ''">
+	        NULL
+	    </if>
+		 , #{treatmentway}, #{doctorseq},to_date(#{appointmentdate}, 'yyyy-mm-dd hh24:mi:ss'), default,  #{symptom})
+	</insert>
+
+	<insert id="addHospitalAppintmentStatus">
+		insert into tblAppointmentStatus (appointmentStatusSeq,appointmentSeq,status)
+			values (seqAppointmentStatus.nextVal, (select max(appointmentSeq) from tblAppointment), '승인대기')
+	</insert>
+	<insert id="addPharmacyAppintment" parameterType="com.project.apa.api.search.model.ReservationPharmacyAppointmentDTO">
+		insert into tblDispenseList (dispenseListSeq, appointmentSeq, pharmacyId, pickUpWay, regdate)
+		 values (seqDispenseList.nextVal, (select max(appointmentSeq) from tblAppointment), #{pharmacyid}, #{pickupway},to_date(#{regdate}, 'yyyy-mm-dd hh24:mi:ss'))
+	</insert>
+
+	<insert id="addPharmacyAppintmentStatus">
+		insert into tblDispenseStatus (dispenseStatusSeq,dispenseListSeq,dispenseStatus,regdate)
+			values (seqDispenseStatus.nextVal, (select max(dispenseListSeq) from tblDispenseList), '제조대기',null)
+	</insert>
+
+</mapper>

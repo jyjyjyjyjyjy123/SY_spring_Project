@@ -1,0 +1,152 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.project.apa.mapper.AuthMapper">
+	<resultMap type="com.project.apa.auth.model.MemberDTO" id="memberMap">
+		<id property="userid" column="userid"/>
+		<result property="username" column="username"/>
+		<result property="userssn" column="userssn"/>
+		<result property="userseq" column="userseq"/>
+		<result property="userpw" column="userpw"/>
+		<result property="usertel" column="usertel"/>
+		<result property="useraddress" column="useraddress"/>
+		<result property="useremail" column="useremail"/>
+		<result property="userrelation" column="userrelation"/>
+		<result property="usercautioncount" column="usercautioncount"/>
+		<result property="registerdate" column="registerdate"/>
+		<result property="isuserunregister" column="isuserunregister"/>
+		<collection property="authlist" resultMap="authMap"></collection>
+	</resultMap>
+	
+	<resultMap type="com.project.apa.auth.model.AuthDTO" id="authMap">
+		<result property="userid" column="userid"/>
+		<result property="userauth" column="userauth"/>
+	</resultMap>
+	
+	<select id="read" parameterType="com.project.apa.auth.model.MemberDTO" resultMap="memberMap">
+		select 
+		    u.userseq, u.username, u.userssn, u.userid, u.userpw, u.usertel, u.useraddress,
+		    u.useremail, u.userrelation, u.usercautioncount, u.registerdate, u.isuserunregister, a.userauth
+		from tblUser u
+		    left outer join tblUserAuth a
+		        on u.userseq = a.userseq
+		    where u.userid = #{userid}
+	</select>
+	
+	<!-- 병원 -->
+	<resultMap type="com.project.apa.auth.model.HospitalMemberDTO" id="HospitalMap">
+		<id property="hospitalId" column="hospitalId"/>
+		<result property="hospitalPw" column="hospitalPw"/>
+		<result property="hospitalName" column="hospitalName"/>
+		<result property="hospitalSsn" column="hospitalSsn"/>
+		<result property="hospitalAddress" column="hospitalAddress"/>
+		<result property="hospitalEmail" column="hospitalEmail"/>
+		<result property="hospitalTel" column="hospitalTel"/>
+		<result property="hospitalJoinDate" column="hospitalJoinDate"/>
+		<result property="isHospitalUnRegister" column="isHospitalUnRegister"/>
+	<collection property="authlist" resultMap="authMap2"></collection>
+	</resultMap>
+	
+	<resultMap type="com.project.apa.auth.model.AuthDTO" id="authMap2">
+		<result property="hospitalid" column="hospitalid"/>
+		<result property="hospitalauth" column="hospitalauth"/>
+	</resultMap>
+	
+	<select id="hospitalread" parameterType="com.project.apa.auth.model.HospitalMemberDTO" resultMap="HospitalMap">
+		select 
+			h.hospitalId,
+			h.hospitalPw,
+			h.hospitalName,
+			h.hospitalSsn,
+			h.hospitalAddress,
+			h.hospitalEmail,
+			h.hospitalTel,
+			h.hospitalJoinDate,
+			h.isHospitalUnRegister,
+		    a.hospitalauth
+		from tblhospital h
+		    left outer join tblHospitalAuth a
+		        on h.hospitalid = a.hospitalid
+		    where h.hospitalid = #{hospitalid}
+	</select>
+
+<!-- 약국 -->
+	<resultMap type="com.project.apa.auth.model.PharmacyMemberDTO" id="PharmacyMap">
+		<id property="pharmacyId" column="pharmacyId"/>
+		<result property="pharmacyPw" column="pharmacyPw"/>
+		<result property="pharmacyName" column="pharmacyName"/>
+		<result property="pharmacySsn" column="pharmacySsn"/>
+		<result property="pharmacyAddress" column="pharmacyAddress"/>
+		<result property="pharmacyEmail" column="pharmacyEmail"/>
+		<result property="pharmacyTel" column="pharmacyTel"/>
+		<result property="regDate" column="regDate"/>
+		<result property="isPharmacyUnRegister" column="isPharmacyUnRegister"/>
+	<collection property="authlist" resultMap="authMap3"></collection>
+	</resultMap>
+	
+	<resultMap type="com.project.apa.auth.model.AuthDTO" id="authMap3">
+		<result property="pharmacyid" column="pharmacyid"/>
+		<result property="pharmacyauth" column="pharmacyauth"/>
+	</resultMap>
+	
+	<select id="pharmacyread" parameterType="com.project.apa.auth.model.PharmacyMemberDTO" resultMap="PharmacyMap">
+		select 
+			p.pharmacyId,
+			p.pharmacyPw,
+			p.pharmacyName,
+			p.pharmacySsn,
+			p.pharmacyAddress,
+			p.pharmacyEmail,
+			p.pharmacyTel,
+			p.regDate,
+			p.isPharmacyUnRegister,
+		    a.pharmacyauth
+		from tblpharmacy p
+		    left outer join tblPharmacyAuth a
+		        on p.pharmacyid = a.pharmacyid
+		    where p.pharmacyid = #{pharmacyid}
+	</select>
+
+
+<!-- 관리자 -->
+ 	 <resultMap type="com.project.apa.auth.model.AdminMemberDTO" id="AdminMap">
+		<id property="adminId" column="adminId"/>
+		<result property="adminPw" column="adminPw"/>
+		<result property="adminEmail" column="adminEmail"/>
+		<result property="adminTel" column="adminTel"/>
+	<collection property="authlist" resultMap="authMap4"></collection>
+	</resultMap>
+	
+	<resultMap type="com.project.apa.auth.model.AuthDTO" id="authMap4">
+		<result property="adminid" column="adminid"/>
+		<result property="adminauth" column="adminauth"/>
+	</resultMap>
+	
+	<select id="adminread" parameterType="com.project.apa.auth.model.AdminMemberDTO" resultMap="AdminMap">
+		select 
+			b.adminId,
+			b.adminPw,
+			b.adminEmail,
+			b.adminTel,
+		    a.adminauth
+		from tbladmin b
+		    left outer join tbladminAuth a
+		        on b.adminid = a.adminid
+		    where b.adminid = #{adminid}
+	</select> 
+
+	<!-- 테스트 -->
+	<update id="encode" parameterType="com.project.apa.auth.model.MemberDTO">
+		update tbluser set userpw = #{userpw} where userseq = #{userseq}
+	</update>
+	<update id="encode2" parameterType="com.project.apa.auth.model.HospitalMemberDTO">
+      update tblhospital set hospitalpw = #{hospitalPw} where hospitalid = #{hospitalId}
+   </update>
+   <update id="encode3" parameterType="com.project.apa.auth.model.PharmacyMemberDTO">
+      update tblpharmacy set pharmacypw = #{pharmacyPw} where pharmacyid = #{pharmacyId}
+   </update>
+	<update id="encode4" parameterType="com.project.apa.auth.model.AdminMemberDTO">
+      update tbladmin set adminpw = #{adminPw} where adminid = #{adminId}
+   </update>
+   <select id="getuserseq" resultType="String"> select userseq from tbluser where userid = #{userid} </select>
+	
+</mapper>

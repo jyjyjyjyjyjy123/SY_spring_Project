@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.project.apa.mapper.AfterMapper">
+	
+	<select id="afterlist" resultType="com.project.apa.api.admin.domain.AfterDTO">
+		SELECT * FROM vwASHospitalinfo
+	</select>
+	
+	<select id="afterview" parameterType="String" resultType="com.project.apa.api.admin.domain.AfterDTO">
+		SELECT * FROM vwASHospitalinfo where hospitalId = #{hospitalId}
+	</select>
+	
+	<update id="afteredit" parameterType="com.project.apa.api.admin.domain.AfterDTO">
+		update tblHospital set isHospitalUnregister = 'n' where hospitalId = #{hospitalId}
+	</update>
+</mapper>

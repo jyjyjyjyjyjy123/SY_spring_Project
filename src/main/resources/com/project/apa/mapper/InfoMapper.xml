@@ -1,0 +1,85 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.project.apa.mapper.InfoMapper">
+	 
+	 <select id="basichospitalInfo" resultType="com.project.apa.api.search.model.HospitalInfoDTO">
+	 	select 
+		    h.hospitalid, h.hospitalpw, h.hospitalname, h.hospitalssn, h.hospitaladdress,
+		    h.hospitalemail, h.hospitaltel, h.hospitaljoindate,
+		    ho.face, ho.unface, ho.housecall, ho.vaccination, ho.ishealthcheck, ho.ishospitalnightcare,
+		    ho.ishospitalholiday, ho.opentime, ho.closetime, ho.restopentime, ho.restclosetime, ho.hospitaldayoff 
+		from tblhospital h
+		    inner join tblhospitaloperation ho
+		        on h.hospitalid = ho.hospitalid
+	 </select>
+	 
+	 <select id="hospitalInfo" parameterType="String" resultType="com.project.apa.api.search.model.HospitalInfoDTO">
+	 	select 
+		    h.hospitalid, h.hospitalpw, h.hospitalname, h.hospitalssn, h.hospitaladdress,
+		    h.hospitalemail, h.hospitaltel, h.hospitaljoindate,
+		    ho.face, ho.unface, ho.housecall, ho.vaccination, ho.ishealthcheck, ho.ishospitalnightcare,
+		    ho.ishospitalholiday, ho.opentime, ho.closetime, ho.restopentime, ho.restclosetime, ho.hospitaldayoff 
+		from tblhospital h
+		    inner join tblhospitaloperation ho
+		        on h.hospitalid = ho.hospitalid
+		    where h.hospitalid = #{seq}
+	 </select>
+	 
+	 <select id="deptlist" parameterType="String" resultType="com.project.apa.api.search.model.SelfsymtomDTO">
+	 	select 
+		    d.departmentname
+		from tblhospital h
+		    inner join tblhospitaloperation ho
+		        on h.hospitalid = ho.hospitalid
+		    inner join tblhospitaltreatment ht 
+		        on ht.hospitalid = h.hospitalid
+		    inner join tbldepartment d
+		        on ht.departmentseq = d.departmentseq
+		    where h.hospitalid = #{seq}
+	 </select>
+	 
+	 <select id="doclist" parameterType="String" resultType="com.project.apa.api.search.model.HospitalDoctorDTO">
+	 	select * from tbldoctor  d
+		    inner join tbldepartment dept
+		        on d.departmentseq = dept.departmentseq
+		WHERE hospitalid = #{seq}
+	 </select>
+	 
+	 <select id="reviewlist" parameterType="String" resultType="com.project.apa.api.search.model.ReviewDTO">
+	 	select 
+		    a.hospitalid, u.userid,
+		    r.reviewcontent, r.reviewseq
+		from tblappointment a 
+		    inner join tblreview r
+		        on a.appointmentseq = r.appointmentseq
+		    inner join tbluser u
+		        on a.userseq = u.userseq
+		    where a.hospitalid = #{seq} and r.isreviewdelete in ('n', 'N')
+	 </select>
+	 
+	 <select id="reviewtaglist" parameterType="String" resultType="com.project.apa.api.search.model.ReviewDTO">
+	 	select 
+		    t.tagcontent, t.tagtype, r.reviewseq
+		from tblappointment a 
+		    inner join tblreview r
+		        on a.appointmentseq = r.appointmentseq
+		    inner join tblreviewtag rt
+		        on r.reviewseq = rt.reviewseq
+		    inner join tbltag t
+		        on rt.tagseq = t.tagseq
+		    where a.hospitalid = #{seq}
+	 </select>
+	 
+	 <select id="bookmarkcount" parameterType="String" resultType="com.project.apa.api.search.model.BookMarkDTO">
+	 	select * from tblbookmark where hospitalid = #{seq}
+	 </select>
+	 
+	 <insert id="bookmarkin" parameterType="com.project.apa.api.search.model.BookMarkDTO">
+		INSERT INTO tblbookmark (bookmarkseq, userseq, hospitalid) VALUES ((select max(bookmarkseq) from tblbookmark)+1, #{userseq}, #{hospitalid})
+	</insert>
+	
+	<delete id="bookmarkout" >
+		delete tblbookmark where userseq = #{userseq} and hospitalid=#{hospitalid}
+	</delete>
+	
+</mapper>
